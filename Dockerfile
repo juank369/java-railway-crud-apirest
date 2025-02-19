@@ -1,21 +1,24 @@
-FROM eclipse-temurin:21-jdk as build
+# Etapa de compilación
+FROM eclipse-temurin:21-jdk AS build
 
-COPY . /app
 WORKDIR /app
+COPY . /app
 
 RUN chmod +x mvnw
-RUN ,/mvnw package -DskipTest
-RUN mv -f target/*.jar app.jar
+RUN ./mvnw package -DskipTests
+RUN cp target/*.jar app.jar
 
+# Etapa de ejecución
 FROM eclipse-temurin:21-jre
 
-ARG PORT
-ENV PORT=${PORT}
+# Railway asigna el puerto dinámicamente, aseguramos que Java lo use
+ENV PORT=8080
 
-COPY --from=build /app/app.jar .
+WORKDIR /app
+COPY --from=build --chown=runtime:runtime /app/app.jar .
 
-
-RUN useradd runtime
+RUN useradd -m runtime
 USER runtime
 
-ENTRYPOINT [ "java", "-Dserver.port=${PORT}", "-jar", "app.jar" ]
+# Ejecutamos la app con el puerto asignado por Railway
+ENTRYPOINT ["java", "-Dserver.port=${PORT}", "-jar", "/app/app.jar"]
