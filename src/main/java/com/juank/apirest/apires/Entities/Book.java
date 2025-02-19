@@ -14,6 +14,7 @@ public class Book {
     private String name;
     private Double price;
     private String image;
+    private String description;
 
     public Long getId() {
         return id;
@@ -36,6 +37,13 @@ public class Book {
     public void setImage(String image) {
         this.image = image;
     }
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    
     
 
     
